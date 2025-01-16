@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exit Poll</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('images/LogoBlu.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+        }
+
+        .success {
+            color: green;
+            font-size: 0.9em;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #votePage, #results {
+    width: 80%; /* Adjust to your desired width */
+    max-width: 100%; /* Ensures the width can go up to full screen if necessary */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Make sure verificationForm stays as is */
+#verificationForm {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+        .chart-container {
+            margin-top: 20px;
+        }
+
+        h2, h3 {
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            .form-control {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+
+            h3 {
+                font-size: 1.3rem;
+            }
+
+            .form-control {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="verificationForm" class="card shadow">
+            <!-- Ikona në krye -->
+            <div class="text-center mb-3">
+                <img src="images/LogoZgjedhje-removebg-preview.png" alt="Ikona juaj" width="250" height="188">
+                <br>
+                <!-- Titulli në qendër -->
+                <h3 class="text-center mb-4" style="font-size: 2rem;">REPUBLIKA E KOSOVËS</h3>
+            </div>
+        
+            <label for="personalNumber" class="form-label">Numri Personal:</label>
+            <input type="text" id="personalNumber" name="personalNumber" maxlength="10" class="form-control" required>
+        
+            <div class="row">
+                <!-- Nome e Cognome uno accanto all'altro -->
+                <div class="col-md-6">
+                    <label for="firstName" class="form-label mt-3">Emri:</label>
+                    <input type="text" id="firstName" name="firstName" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="lastName" class="form-label mt-3">Mbiemri:</label>
+                    <input type="text" id="lastName" name="lastName" class="form-control" required>
+                </div>
+            </div>
+
+            <label for="dateOfBirth" class="form-label mt-3">Data e Lindjes:</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required>
+    
+            
+            <!-- I pulsanti uno accanto all'altro -->
+            <div class="row mt-4">
+                <div class="col-6">
+                    <button type="button" class="btn btn-info w-100" onclick="showResults()">SHIKO REZULTATET</button>
+                </div>
+                <div class="col-6">
+                    <button type="button" class="btn btn-primary w-100" onclick="verifyNumber()">VERIFIKO</button>
+                </div>
+            </div>
+
+            <p id="message" class="error hidden mt-2"></p>
+            <br>
+            <p id="information" class="information" style="font-size: 0.9em; font-style: italic; background-color: rgba(255, 255, 255, 0.7); padding: 10px; border-radius: 5px;">
+                Ju lutemi që të kontrolloni me kujdes numrin tuaj personal dhe të dhënat që shënoni, sepse nuk ka kontroll automatik, pasi nuk kemi të dhëna nga Qeveria e Kosovës për të verifikuar emrin dhe mbiemrin në bazë të numrit tuaj personal. Andaj, ju sugjerojmë që në rast se numri juaj personal ka votuar pa dijenin tuaj, të na kontaktoni në WhatsApp në numrin +39 3895292044.
+            </p>
+        </div>
+        
+        <div id="votePage" class="hidden mt-4 card shadow">
+            <h3 class="text-center">Zgjidhni kandidatin tuaj:</h3>
+            <form id="voteForm">
+                <div class="form-check">
+                    <input type="radio" id="candidate1" name="candidate" value="IRDK" class="form-check-input" required>
+                    <label for="candidate1" class="form-check-label">111 - INICIATIVA E RE DEMOKRATIKE E KOSOVËS - IRDK</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate2" name="candidate" value="SRPSKA LISTA" class="form-check-input">
+                    <label for="candidate2" class="form-check-label">112 - SRPSKA LISTA</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate3" name="candidate" value="Jedinstvena Goranska Partija" class="form-check-input">
+                    <label for="candidate3" class="form-check-label">113 - Jedinstvena Goranska Partija</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate4" name="candidate" value="Partia Rome Bashkuar" class="form-check-input">
+                    <label for="candidate4" class="form-check-label">114 - PARTIA ROME E BASHKUAR E KOSOVËS</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate5" name="candidate" value="Partia Libere Egjiptiane" class="form-check-input">
+                    <label for="candidate5" class="form-check-label">115 - PARTIA LIBERALE EGJIPTIANE - PLE</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate6" name="candidate" value="Srpska Demokratija" class="form-check-input">
+                    <label for="candidate6" class="form-check-label">116 - SRPSKA DEMOKRATIJA</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate7" name="candidate" value="Balli Kombetar" class="form-check-input">
+                    <label for="candidate7" class="form-check-label">117 - Partia Balli Kombëtar Demokrat Shqiptar</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate8" name="candidate" value="LVV" class="form-check-input">
+                    <label for="candidate8" class="form-check-label">118 - Lëvizja VETËVENDOSJE!</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate9" name="candidate" value="NOVA DEMOKRATSKA" class="form-check-input">
+                    <label for="candidate9" class="form-check-label">119 - NOVA DEMOKRATSKA STRANKA</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate10" name="candidate" value="Kosovskih Srba" class="form-check-input">
+                    <label for="candidate10" class="form-check-label">120 - Partija kosovskih Srba</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate11" name="candidate" value="Nasza Bosnjacka" class="form-check-input">
+                    <label for="candidate11" class="form-check-label">121 - Naša Bošnjačka Koalicija (Naša Inicijativa i Bošnjačka stranka)</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate12" name="candidate" value="Kosova Adalet" class="form-check-input">
+                    <label for="candidate12" class="form-check-label">122 - Kosova Adalet Türk Partisi</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate13" name="candidate" value="Ashkali Integrim" class="form-check-input">
+                    <label for="candidate13" class="form-check-label">123 - PARTIA E ASHKALINJËVE PËR INTEGRIM</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate14" name="candidate" value="LDK" class="form-check-input">
+                    <label for="candidate14" class="form-check-label">124 - LIDHJA DEMOKRATIKE E KOSOVËS - LDK</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate15" name="candidate" value="PDAK LPB" class="form-check-input">
+                    <label for="candidate15" class="form-check-label">125 - PDAK-LPB</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate17" name="candidate" value="Gradjanska Inicijativa" class="form-check-input">
+                    <label for="candidate16" class="form-check-label">126 - GRADJANSKA INICIJATIVA NARODNA PRAVDA</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate18" name="candidate" value="SDU" class="form-check-input">
+                    <label for="candidate17" class="form-check-label">127 - SOCIJALDEMOKRATSKA UNIJA - SDU</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate18" name="candidate" value="Fatmir Bytyqi" class="form-check-input">
+                    <label for="candidate18" class="form-check-label">128 - Fatmir Bytyqi</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate19" name="candidate" value="Koalicioni per Familje" class="form-check-input">
+                    <label for="candidate19" class="form-check-label">129 - Koalicioni për Familje</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate20" name="candidate" value="Yenilikci Turk Hareket" class="form-check-input">
+                    <label for="candidate20" class="form-check-label">130 - Yenilikçi Türk Hareket Partisi</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate21" name="candidate" value="PDK" class="form-check-input">
+                    <label for="candidate21" class="form-check-label">131 - PARTIA DEMOKRATIKE E KOSOVËS - PDK</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate22" name="candidate" value="Slobodu Pravdu" class="form-check-input">
+                    <label for="candidate22" class="form-check-label">132 - Za Slobodu Pravdu i Opstanak</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate23" name="candidate" value="Srpski Narodni Pokret" class="form-check-input">
+                    <label for="candidate23" class="form-check-label">133 - Srpski narodni pokret</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate24" name="candidate" value="Kosova Demokratik Turk" class="form-check-input">
+                    <label for="candidate24" class="form-check-label">134 - KOSOVA DEMOKRATİK TÜRK PARTİSİ</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate25" name="candidate" value="Koalicija Vakat" class="form-check-input">
+                    <label for="candidate25" class="form-check-label">135 - Koalicija Vakat</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate26" name="candidate" value="Opre Roma Kosova" class="form-check-input">
+                    <label for="candidate26" class="form-check-label">136 - Opre Roma Kosova</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate27" name="candidate" value="AAK Nisma" class="form-check-input">
+                    <label for="candidate27" class="form-check-label">137 - AAK - ALEANCA PËR ARDHMËRINË E KOSOVËS NISMA - Nisma Socialdemokrate</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="candidate28" name="candidate" value="FJALA" class="form-check-input">
+                    <label for="candidate28" class="form-check-label">138 - FJALA</label>
+                </div>
+        
+                <button type="submit" class="btn btn-success mt-4 w-100">Voto</button>
+            </form>
+        </div>
+        
+
+        <div id="results" class="hidden mt-4 card shadow">
+            <h3 class="text-center">Rezultatet:</h3>
+            <div class="chart-container">
+                <canvas id="resultsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+document.getElementById('personalNumber').addEventListener('input', function (e) {
+    const input = e.target.value;
+
+    // Hiq çfarëdo karakteri që nuk është numër
+    e.target.value = input.replace(/\D/g, '');
+
+    // Mos lejo më shumë se 10 shifra
+    if (e.target.value.length > 10) {
+        e.target.value = e.target.value.slice(0, 10);
+    }
+    toggleVerifyButton();
+});
+
+document.getElementById('firstName').addEventListener('input', toggleVerifyButton);
+document.getElementById('lastName').addEventListener('input', toggleVerifyButton);
+document.getElementById('dateOfBirth').addEventListener('change', toggleVerifyButton);
+
+function toggleVerifyButton() {
+    const personalNumber = document.getElementById('personalNumber').value;
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const dateOfBirth = document.getElementById('dateOfBirth').value;
+    const verifyButton = document.querySelector('button[onclick="verifyNumber()"]');
+
+    // Kontrollo nëse data e lindjes është e vlefshme dhe mbi 18 vjet
+    if (isValidDateOfBirth(dateOfBirth) && personalNumber.length === 10 && firstName && lastName) {
+        verifyButton.disabled = false;
+    } else {
+        verifyButton.disabled = true;
+    }
+}
+
+// Kontrollo nëse data e lindjes është mbi 18 vjet
+function isValidDateOfBirth(date) {
+    if (!date) return false;
+
+    const birthDate = new Date(date);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const isBirthdayPassed = today >= new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+
+    return age > 18 || (age === 18 && isBirthdayPassed);
+}
+
+// Fillimisht çaktivizo butonin
+document.querySelector('button[onclick="verifyNumber()"]').disabled = true;
+
+
+
+        const votes = {
+            candidate1: 0,
+            candidate2: 0,
+            candidate3: 0,
+            candidate4: 0,
+            candidate5: 0
+        };
+        const votedNumbers = new Set();
+
+        function verifyNumber() {
+    const personalNumber = document.getElementById('personalNumber').value;
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName = document.getElementById('lastName').value.trim();
+    const dateOfBirth = document.getElementById('dateOfBirth').value; // Controlla che contenga un valore
+
+    // Aggiungi un controllo per la data di nascita
+    if (!dateOfBirth) {
+        alert("Data e lindjes është e detyrueshme.");
+        return;
+    }
+
+    fetch('https://kosova2025.pythonanywhere.com/verify', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            personalNumber,
+            firstName,
+            lastName,
+            dateOfBirth // Questo campo deve essere presente
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        const message = document.getElementById('message');
+        if (data.status === 'success') {
+            message.className = 'success';
+            message.textContent = data.message;
+            document.getElementById('verificationForm').classList.add('hidden');
+            document.getElementById('votePage').classList.remove('hidden');
+        } else {
+            message.className = 'error';
+            message.textContent = data.message;
+        }
+        message.classList.remove('hidden');
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+        document.getElementById('voteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const personalNumber = document.getElementById('personalNumber').value;
+            const selectedCandidate = document.querySelector('input[name="candidate"]:checked').value;
+
+            fetch('https://kosova2025.pythonanywhere.com/vote', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    personalNumber,
+                    candidate: selectedCandidate,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    showResults();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+function showResults() {
+    fetch('https://kosova2025.pythonanywhere.com/results')
+    .then(response => response.json())
+    .then(data => {
+        const labels = data.map(item => item.candidate_name);
+        const votes = data.map(item => item.vote_count);
+        
+        // Calculate the total number of votes
+        const totalVotes = votes.reduce((sum, vote) => sum + vote, 0);
+
+        // Calculate percentage for each candidate
+        const percentages = votes.map(vote => (vote / totalVotes) * 100);
+
+        // Prepare the data for the chart
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Numri i votave',
+                data: percentages, // Now the data is percentages
+                backgroundColor: [
+    'rgba(255, 99, 132, 0.5)',
+    'rgba(54, 162, 235, 0.5)',
+    'rgba(255, 206, 86, 0.5)',
+    'rgba(75, 192, 192, 0.5)',
+    'rgba(153, 102, 255, 0.5)',
+    'rgba(255, 159, 64, 0.5)',
+    'rgba(199, 99, 99, 0.5)',
+    'rgba(102, 255, 102, 0.5)',
+    'rgba(255, 165, 0, 0.5)',
+    'rgba(255, 105, 180, 0.5)',
+    'rgba(32, 178, 170, 0.5)',
+    'rgba(255, 69, 0, 0.5)',
+    'rgba(138, 43, 226, 0.5)',
+    'rgba(0, 255, 255, 0.5)',
+    'rgba(128, 0, 0, 0.5)',
+    'rgba(0, 0, 128, 0.5)',
+    'rgba(255, 20, 147, 0.5)',
+    'rgba(34, 139, 34, 0.5)',
+    'rgba(75, 0, 130, 0.5)',
+    'rgba(255, 140, 0, 0.5)',
+    'rgba(46, 139, 87, 0.5)',
+    'rgba(123, 104, 238, 0.5)',
+    'rgba(0, 191, 255, 0.5)',
+    'rgba(255, 99, 71, 0.5)',
+    'rgba(255, 105, 180, 0.5)',
+    'rgba(60, 179, 113, 0.5)',
+    'rgba(255, 240, 245, 0.5)'
+],
+borderColor: [
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)',
+    'rgba(199, 99, 99, 1)',
+    'rgba(102, 255, 102, 1)',
+    'rgba(255, 165, 0, 1)',
+    'rgba(255, 105, 180, 1)',
+    'rgba(32, 178, 170, 1)',
+    'rgba(255, 69, 0, 1)',
+    'rgba(138, 43, 226, 1)',
+    'rgba(0, 255, 255, 1)',
+    'rgba(128, 0, 0, 1)',
+    'rgba(0, 0, 128, 1)',
+    'rgba(255, 20, 147, 1)',
+    'rgba(34, 139, 34, 1)',
+    'rgba(75, 0, 130, 1)',
+    'rgba(255, 140, 0, 1)',
+    'rgba(46, 139, 87, 1)',
+    'rgba(123, 104, 238, 1)',
+    'rgba(0, 191, 255, 1)',
+    'rgba(255, 99, 71, 1)',
+    'rgba(255, 105, 180, 1)',
+    'rgba(60, 179, 113, 1)',
+    'rgba(255, 240, 245, 1)'
+],
+                borderWidth: 1
+            }]
+        };
+
+        // Create the chart with horizontal bars
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar', // 'bar' for horizontal bars
+            data: chartData,
+            options: {
+                responsive: true,
+                indexAxis: 'y', // This makes the bars horizontal
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                const candidate = tooltipItem.label; // Candidate name
+                                const percentage = tooltipItem.raw; // Vote percentage
+                                const actualVotes = (percentage * totalVotes) / 100; // Calculate actual votes
+
+                                return `${candidate}: ${actualVotes.toFixed(0)} vota (${percentage.toFixed(2)}%)`; // Return the vote and percentage info
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100, // Display percentages (from 0 to 100)
+                        title: {
+                            display: true,
+                            text: 'Përqindja e votave'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'; // Show percentages on X-axis
+                            }
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Kandidatët'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Show the results chart and hide the other sections
+        document.getElementById('results').classList.remove('hidden');
+        document.getElementById('votePage').classList.add('hidden');
+        document.getElementById('verificationForm').classList.add('hidden');
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+    </script>
+</body>
+</html>
